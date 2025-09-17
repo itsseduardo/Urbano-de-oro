@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Producto | Urbano de Oro</title>
+    <link rel="icon" href="/assets/urbanologo.jpg" />
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+
+    <!-- Header (tu mismo header con el icono del carrito) -->
+    <header class="container header">
+        <a class="brand" href="/"><img src="/assets/urbanologo.jpg" alt=""><span>Urbano de Oro</span></a>
+        <nav class="nav">
+            <a href="/">Inicio</a>
+            <a href="/category.html">Catálogo</a>
+            <a class="btn btn--primary" href="https://wa.me/573116997253" target="_blank">WhatsApp</a>
+            <a id="cartOpen" class="cart-btn" href="#" aria-label="Abrir carrito">
+                <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <rect x="4.5" y="8" width="15" height="12" rx="2.2" ry="2.2" fill="none" stroke="currentColor"
+                        stroke-width="1.8" />
+                    <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+                <span id="cartCount" class="cart-count">0</span>
+            </a>
+        </nav>
+        <button class="nav-toggle" aria-label="Abrir menú">☰</button>
+    </header>
+
+    <!-- Contenido -->
+    <main class="container section product-page">
+        <nav class="crumbs" id="crumbs"></nav>
+
+        <div class="prod-grid">
+            <!-- Galería -->
+            <section class="prod-gallery">
+                <div class="prod-main">
+                    <img id="prodMainImg" src="/assets/placeholder.webp" alt="" loading="eager">
+                </div>
+                <div class="prod-thumbs" id="prodThumbs"></div>
+            </section>
+
+            <!-- Info -->
+            <section class="prod-info">
+                <h1 id="prodTitle">Producto</h1>
+
+                <div class="prod-price" id="prodPrice">
+                    <!-- $xxx.xxx <del>$yyy.yyy</del> -->
+                </div>
+
+                <div class="prod-meta" id="prodMeta">
+                    <!-- 100ml · mujer | Tags -->
+                </div>
+
+                <div class="prod-actions">
+                    <div class="qty">
+                        <button class="qty-btn" id="qtyMinus">−</button>
+                        <input id="qtyInput" type="number" value="1" min="1" inputmode="numeric" />
+                        <button class="qty-btn" id="qtyPlus">+</button>
+                    </div>
+                    <button id="addToCart" class="btn btn--primary">Añadir al carrito</button>
+                    <button id="buyWhats" class="btn">Comprar por WhatsApp</button>
+                </div>
+
+                <div class="prod-tags" id="prodTags"></div>
+            </section>
+        </div>
+
+        <!-- Relacionados -->
+        <section class="section" id="relatedBlock" hidden>
+            <h3>Productos relacionados</h3>
+            <div class="trend-track" id="relatedTrack"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer__grid">
+            <div><strong>Urbano de Oro</strong>
+                <p class="muted">© <span id="year"></span></p>
+            </div>
+            <div class="footer__links">
+                <a href="https://www.instagram.com/urbanodeoro.col/" target="_blank">Instagram</a>
+                <a href="https://wa.me/573116997253" target="_blank">WhatsApp</a>
+                <a href="mailto:urbanodeoroinfo@gmail.com">Gmail</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Drawer del carrito -->
+    <div id="cartDrawer" class="cart-drawer" aria-hidden="true">
+        <button id="cartBackdrop" class="cart-backdrop" aria-label="Cerrar carrito"></button>
+        <div class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+            <header class="cart-head">
+                <h3 id="cartTitle">Carrito</h3><button id="cartClose" class="icon-btn" aria-label="Cerrar">✕</button>
+            </header>
+            <div id="cartItems" class="cart-items"></div>
+            <footer class="cart-foot">
+                <div class="cart-row"><span>Subtotal</span><strong id="cartSubtotal">$0</strong></div>
+                <div class="cart-actions">
+                    <button id="cartClear" class="btn">Vaciar</button>
+                    <button id="cartWhats" class="btn btn--primary">Pedir por WhatsApp</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="/js/cart.js" defer></script>
+    <script type="module" src="/js/product.js"></script>
+
+</body>
+
+</html>

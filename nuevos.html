@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Nuevos lanzamientos | Urbano de Oro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/assets/urbanologo.jpg" />
+    <link href="/css/styles.css" rel="stylesheet" />
+</head>
+
+<body class="page">
+    <header class="container header">
+        <a class="brand" href="/"><img src="/assets/urbanologo.jpg" alt="Urbano de Oro" /><span>Urbano de Oro</span></a>
+        <nav class="nav">
+            <a href="/">Inicio</a>
+            <a href="/nuevos.html">Nuevos lanzamientos</a>
+            <a href="/ofertas.html">Ofertas</a>
+            <a class="btn btn--primary" href="https://wa.me/573116997253" target="_blank" rel="noopener">WhatsApp</a>
+            <a id="cartOpen" class="cart-btn" href="#" aria-label="Abrir carrito">
+                <!-- Bolsa -->
+                <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <!-- cuerpo de la bolsa -->
+                    <rect x="4.5" y="8" width="15" height="12" rx="2.2" ry="2.2" fill="none" stroke="currentColor"
+                        stroke-width="1.8" />
+                    <!-- asa -->
+                    <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+                <!-- badge -->
+                <span id="cartCount" class="cart-count">0</span>
+            </a>
+        </nav>
+        <button class="nav-toggle" aria-label="Abrir menú">☰</button>
+    </header>
+
+    <main class="container section cat-page">
+        <aside class="cat-sidebar">
+            <details open>
+                <summary>Filtrar por tags</summary>
+                <div id="facetList" class="facet-list"></div>
+            </details>
+        </aside>
+
+        <section class="cat-main">
+            <nav class="crumbs">
+                <a href="/">Inicio</a> / <span id="crumbCat">Nuevos</span>
+            </nav>
+
+            <h1 id="catTitle">Nuevos lanzamientos</h1>
+
+            <div class="cat-toolbar">
+                <span id="resultsInfo" class="muted"></span>
+                <div class="right">
+                    <label class="control">Mostrar:
+                        <select id="perSelect">
+                            <option>12</option>
+                            <option>24</option>
+                            <option selected>30</option>
+                            <option>48</option>
+                        </select>
+                    </label>
+                    <label class="control">Ordenar por:
+                        <select id="sortSelect">
+                            <option value="default" selected>Por defecto</option>
+                            <option value="dateDesc">Más recientes</option>
+                            <option value="priceAsc">Precio ↑</option>
+                            <option value="priceDesc">Precio ↓</option>
+                            <option value="nameAsc">Nombre A–Z</option>
+                            <option value="nameDesc">Nombre Z–A</option>
+                        </select>
+                    </label>
+                    <div class="view-toggle" id="viewToggle" role="group" aria-label="Cambiar vista">
+                        <button class="toggle-btn is-active" data-view="grid" aria-pressed="true"
+                            title="Vista de cuadrícula">
+                            <!-- icono grid -->
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
+                            </svg>
+                        </button>
+                        <button class="toggle-btn" data-view="list" aria-pressed="false" title="Vista de lista">
+                            <!-- icono list -->
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="catGrid" class="grid"></div>
+            <div id="emptyCat" class="empty" hidden>No hay lanzamientos que coincidan.</div>
+
+            <div class="cat-pagination">
+                <button id="prevPage" class="btn" disabled>Anterior</button>
+                <span id="pageInfo" class="muted">Página 1</span>
+                <button id="nextPage" class="btn">Siguiente</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/cart.js" defer></script>
+    <script type="module" src="/js/nuevos.js"></script>
+</body>
+
+</html>

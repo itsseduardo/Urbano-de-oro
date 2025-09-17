@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Acceder</title>
+</head>
+
+<body>
+    <h1>Acceder</h1>
+    <form id="form">
+        <input id="email" type="email" placeholder="Email" required>
+        <input id="pass" type="password" placeholder="Contraseña" required>
+        <button>Entrar</button>
+    </form>
+    <p id="msg"></p>
+
+    <script type="module">
+        import { supabase } from '/js/supabaseClient.js';
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            msg.textContent = 'Accediendo...';
+            const { error } = await supabase.auth.signInWithPassword({
+                email: email.value, password: pass.value
+            });
+            if (error) msg.textContent = error.message;
+            else location.href = '/admin.html';
+        });
+    </script>
+
+</body>
+
+</html>

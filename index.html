@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Urbano de Oro</title>
+    <meta name="description"
+        content="Perfumes 100% originales. Entregas rápidas en Colombia. Catálogo actualizado de fragancias para hombre y mujer.">
+    <link rel="icon" href="/assets/urbanologo.jpg" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:title" content="Urbano de Oro | Perfumes originales" />
+    <meta property="og:description" content="Perfumes 100% originales. Entregas rápidas en Colombia." />
+    <meta property="og:image" content="/assets/banner2.jpg" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Schema.org: Tienda -->
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "Urbano de Oro",
+    "image": "/assets/urbanologo.jpg",
+    "description": "Perfumes 100% originales en Colombia.",
+    "url": "https://tudominio.com",
+    "sameAs": ["https://www.instagram.com/urbanodeoro.col/"],
+    "brand": "Urbano de Oro",
+    "telephone": "+57 3116997253",
+    "address": {
+      "@type": "660003",
+      "addressCountry": "CO"
+    }
+  }
+  </script>
+</head>
+
+<body>
+
+    <!-- Barra de anuncio -->
+    <!-- Barra de anuncio con marquee -->
+    <!-- Franja superior -->
+    <div class="topbar">
+        <div class="marquee">
+            <span class="marquee__content"
+                data-text="¡ENVÍOS GRATIS A TODO COLOMBIA! · Autenticidad 100% garantizada · PSE / Nequi / Bancolombia · Asesoría por WhatsApp">
+                ¡ENVÍOS GRATIS A TODO COLOMBIA! · Autenticidad 100% garantizada · PSE / Nequi / Bancolombia · Asesoría
+                por WhatsApp
+            </span>
+        </div>
+    </div>
+
+
+
+    <!-- Header / Nav -->
+    <header class="container header">
+        <a class="brand" href="/">
+            <img src="/assets/urbanologo.jpg" alt="Urbano de Oro" />
+            <span>Urbano de Oro</span>
+        </a>
+        <nav class="nav">
+            <a href="category.html" id="navCatalogo">Catálogo</a>
+            <a href="#nosotros">Nosotros</a>
+            <a href="#faq">Preguntas</a>
+            <a href="/nuevos.html">Nuevos lanzamientos</a>
+            <a href="/ofertas.html">Ofertas</a>
+            <a class="btn btn--primary" href="https://wa.me/573116997253" target="_blank" rel="noopener">WhatsApp</a>
+            <a id="cartOpen" class="cart-btn" href="#" aria-label="Abrir carrito">
+                <!-- Bolsa -->
+                <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <!-- cuerpo de la bolsa -->
+                    <rect x="4.5" y="8" width="15" height="12" rx="2.2" ry="2.2" fill="none" stroke="currentColor"
+                        stroke-width="1.8" />
+                    <!-- asa -->
+                    <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+                <!-- badge -->
+                <span id="cartCount" class="cart-count">0</span>
+            </a>
+
+        </nav>
+        <button class="nav-toggle" aria-label="Abrir menú">☰</button>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container hero__grid">
+            <div class="hero__copy">
+                <h1>Perfumes 100% originales</h1>
+                <p>Fragancias icónicas para él y para ella. Entrega rápida y asesoría personalizada por WhatsApp.</p>
+                <!-- (sin botones, sin buscador, sin chips) -->
+            </div>
+            <div class="hero__image">
+                <img src="/assets/banner2.jpg" alt="Colección de perfumes" loading="eager" />
+            </div>
+        </div>
+    </section>
+
+
+    <section class="container section categories" aria-label="Categorías">
+        <div class="cat-grid">
+            <a class="cat-card" href="category.html?cat=hombre">
+                <img src="/assets/hombrelogo3.png" alt="Hombre" loading="lazy">
+                <span>HOMBRE</span>
+            </a>
+            <a class="cat-card" href="category.html?cat=mujer">
+                <img src="/assets/mujerlogo2.png" alt="Mujer" loading="lazy">
+                <span>MUJER</span>
+            </a>
+            <a class="cat-card" href="category.html?cat=unisex">
+                <img src="/assets/unisexlogo2.png" alt="Unisex" loading="lazy">
+                <span>UNISEX</span>
+            </a>
+            <a class="cat-card" href="category.html?cat=nicho">
+                <img src="/assets/nichologo2.png" alt="Nicho" loading="lazy">
+                <span>NICHO</span>
+            </a>
+        </div>
+    </section>
+
+
+
+    <!-- Tendencias -->
+    <section class="section section--alt" aria-label="Perfumes en tendencia">
+        <div class="container">
+            <h2>Perfumes en tendencia</h2>
+        </div>
+
+        <div class="trend-slider">
+            <button class="trend-btn prev" aria-label="Anterior">‹</button>
+            <div id="trendTrack" class="trend-track"></div>
+            <button class="trend-btn next" aria-label="Siguiente">›</button>
+        </div>
+
+        <div id="trendDots" class="trend-dots"></div>
+    </section>
+
+
+    <section class="container section fams" aria-label="Categorías">
+        <h2 style="text-align:center;margin-bottom:18px">Categorías</h2>
+
+        <div class="fam-grid">
+            <a class="fam-card" href="/category.html?tags=dulce">
+                <div class="fam-card__media">
+                    <img src="/assets/dulceslogo2.png" alt="Dulces">
+                </div>
+                <div class="fam-card__body">
+                    <h3>Dulces</h3>
+                    <p>Notas golosas y exquisitas como vainilla, caramelo y miel.</p>
+                    <span class="btn btn--ghost btn--sm">Ver perfumes</span>
+                </div>
+            </a>
+
+            <a class="fam-card" href="/category.html?tags=c%C3%ADtricos">
+                <div class="fam-card__media">
+                    <img src="/assets/citricoslogo2.png" alt="Cítricos">
+                </div>
+                <div class="fam-card__body">
+                    <h3>Cítricos</h3>
+                    <p>Energía brillante: limón, bergamota, naranja y pomelo.</p>
+                    <span class="btn btn--ghost btn--sm">Ver perfumes</span>
+                </div>
+            </a>
+
+            <a class="fam-card" href="/category.html?tags=frutal">
+                <div class="fam-card__media">
+                    <img src="/assets/frutaleslogo.png" alt="Frutales">
+                </div>
+                <div class="fam-card__body">
+                    <h3>Frutales</h3>
+                    <p>Jugosas y divertidas: manzana, frutos rojos, melocotón.</p>
+                    <span class="btn btn--ghost btn--sm">Ver perfumes</span>
+                </div>
+            </a>
+
+            <a class="fam-card" href="/category.html?tags=amaderado">
+                <div class="fam-card__media">
+                    <img src="/assets/amaderadologo1.png" alt="Amaderados">
+                </div>
+                <div class="fam-card__body">
+                    <h3>Amaderados</h3>
+                    <p>Calidez y elegancia: cedro, sándalo, vetiver y oud.</p>
+                    <span class="btn btn--ghost btn--sm">Ver perfumes</span>
+                </div>
+            </a>
+
+            <a class="fam-card" href="/category.html?tags=floral">
+                <div class="fam-card__media">
+                    <img src="/assets/floraleslogo3.png" alt="Florales">
+                </div>
+                <div class="fam-card__body">
+                    <h3>Florales</h3>
+                    <p>Románticas y luminosas: rosa, jazmín, gardenia, peonía.</p>
+                    <span class="btn btn--ghost btn--sm">Ver perfumes</span>
+                </div>
+            </a>
+
+            <a class="fam-card" href="/category.html?tags=decants">
+                <div class="fam-card__media">
+                    <img src="/assets/decantslogo.png" alt="Decants y muestras">
+                </div>
+                <div class="fam-card__body">
+                    <h3>Decants · Muestras</h3>
+                    <p>Prueba antes de comprar: viales y atomizadores.</p>
+                    <span class="btn btn--ghost btn--sm">Ver muestras</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+
+    <!-- Nosotros -->
+    <section id="nosotros" class="container section">
+        <h2>¿Por qué Urbano de Oro?</h2>
+        <ul class="bullets">
+            <li>🚚 Envíos nacionales en 24–72h</li>
+            <li>🛡️ Autenticidad garantizada</li>
+            <li>💬 Asesoría por WhatsApp</li>
+            <li>💳 Pagos: PSE, Nequi, Bancolombia, Contraentrega*</li>
+        </ul>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="container section">
+        <h2>Preguntas frecuentes</h2>
+        <details>
+            <summary>¿Los perfumes son originales?</summary>
+            <p>Sí. Trabajamos únicamente con distribuidores autorizados y sellados de fábrica.</p>
+        </details>
+        <details>
+            <summary>¿Cuánto tarda el envío?</summary>
+            <p>Entre 24 y 72 horas hábiles según tu ciudad.</p>
+        </details>
+        <details>
+            <summary>¿Qué medios de pago aceptan?</summary>
+            <p>PSE, Nequi, Bancolombia y contraentrega en ciudades seleccionadas.</p>
+        </details>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer__grid">
+            <div>
+                <strong>Urbano de Oro</strong>
+                <p class="muted">© <span id="year"></span> Todos los derechos reservados.</p>
+            </div>
+            <div class="footer__links">
+                <a href="https://www.instagram.com/urbanodeoro.col/" target="_blank" rel="noopener">Instagram</a>
+                <a href="https://wa.me/5731169987253" target="_blank" rel="noopener">WhatsApp</a>
+                <a href="mailto:urbanodeoroinfo@gmail.com">Gmail</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botón flotante WhatsApp -->
+    <a class="fab-whatsapp" href="https://wa.me/573116997253" target="_blank" rel="noopener"
+        aria-label="Chatear por WhatsApp">🟢</a>
+
+
+
+    <!-- Carrito (drawer) -->
+    <div id="cartDrawer" class="cart-drawer" aria-hidden="true">
+        <!-- Backdrop primero -->
+        <button id="cartBackdrop" class="cart-backdrop" aria-label="Cerrar carrito"></button>
+
+        <!-- Panel después -->
+        <div class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+            <header class="cart-head">
+                <h3 id="cartTitle">Carrito</h3>
+                <button id="cartClose" class="icon-btn" aria-label="Cerrar">✕</button>
+            </header>
+
+            <div id="cartItems" class="cart-items"></div>
+
+            <footer class="cart-foot">
+                <div class="cart-row">
+                    <span>Subtotal</span>
+                    <strong id="cartSubtotal">$0</strong>
+                </div>
+                <div class="cart-actions">
+                    <button id="cartClear" class="btn">Vaciar</button>
+                    <button id="cartWhats" class="btn btn--primary">Pedir por WhatsApp</button>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+
+    <script type="module" src="/js/main.js"></script>
+    <script src="/js/cart.js" defer></script>
+
+
+</body>
+
+</html>

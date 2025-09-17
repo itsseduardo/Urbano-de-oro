@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <title>Ofertas | Urbano de Oro</title>
+    <link rel="icon" href="/assets/urbanologo.jpg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+
+<body class="page">
+    <header class="container header">
+        <a class="brand" href="/">
+            <img src="/assets/urbanologo.jpg" alt="Urbano de Oro" />
+            <span>Urbano de Oro</span>
+        </a>
+        <nav class="nav">
+            <a href="category.html" id="navCatalogo">Catálogo</a>
+            <a href="/nuevos.html">Nuevos lanzamientos</a>
+            <a href="/ofertas.html">Ofertas</a>
+            <a class="btn btn--primary" href="https://wa.me/573116997253" target="_blank" rel="noopener">WhatsApp</a>
+            <a id="cartOpen" class="cart-btn" href="#" aria-label="Abrir carrito">
+                <!-- Bolsa -->
+                <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <!-- cuerpo de la bolsa -->
+                    <rect x="4.5" y="8" width="15" height="12" rx="2.2" ry="2.2" fill="none" stroke="currentColor"
+                        stroke-width="1.8" />
+                    <!-- asa -->
+                    <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+                <!-- badge -->
+                <span id="cartCount" class="cart-count">0</span>
+            </a>
+
+        </nav>
+        <button class="nav-toggle" aria-label="Abrir menú">☰</button>
+    </header>
+
+    <main class="container section">
+        <h1>Ofertas</h1>
+        <div id="offerGrid" class="grid"></div>
+        <div id="noOffers" class="empty" hidden>No hay ofertas activas.</div>
+    </main>
+
+    <script src="/js/cart.js" defer></script>
+    <script type="module" src="/js/ofertas.js"></script>
+</body>
+
+</html>

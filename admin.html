@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body{font-family:Inter,system-ui,Arial,sans-serif;background:#0c0c0d;color:#f2f3f5;margin:0;padding:20px}
+    h1,h2{margin:.2em 0 .5em}
+    button, input, select{font:inherit}
+    .muted{opacity:.8}
+    .card{border:1px solid #2a2b2f;border-radius:12px;background:#141416;padding:10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .row input, .row select{background:#111214;border:1px solid #2a2b2f;color:#f2f3f5;padding:8px 10px;border-radius:10px}
+    .btn{border:1px solid #2a2b2f;background:#18191b;color:#f2f3f5;padding:9px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    .btn--pri{background:linear-gradient(90deg,#d4af37,#f2d16b);color:#111;border:0}
+    .list{display:flex;flex-direction:column;gap:8px}
+  </style>
+</head>
+<body>
+  <h1>Panel</h1>
+  <button id="logout" class="btn">Salir</button>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Producto</h2>
+    <form id="prodForm" class="row">
+      <input name="id" placeholder="id (vacío = auto)" />
+      <input name="brand" placeholder="Marca" required />
+      <input name="name" placeholder="Nombre" required />
+      <select name="gender">
+        <option>hombre</option>
+        <option>mujer</option>
+        <option selected>unisex</option>
+      </select>
+      <input name="size" placeholder="100ml" value="100ml" />
+      <input name="price" type="number" placeholder="Precio" required />
+      <input name="list_price" type="number" placeholder="Precio lista (opcional)" />
+      <input name="offer_ends_at" type="datetime-local" placeholder="Fin de oferta (opcional)">
+      <input name="tags" placeholder="tags separados por coma" />
+      <input id="imgFile" type="file" accept="image/*" />
+      <img id="imgPreview" alt="Vista previa" style="max-width:140px;border-radius:10px;display:none;margin:8px 0">
+      <button class="btn btn--pri">Guardar</button>
+    </form>
+  </section>
+
+  <section class="card" style="margin-top:16px">
+    <h2>Tendencias</h2>
+    <ol id="trendList"></ol>
+    <form id="trendAdd" class="row">
+      <input id="trendId" placeholder="id de producto" />
+      <input id="trendOrder" type="number" placeholder="orden" />
+      <button class="btn">Añadir/Actualizar</button>
+    </form>
+  </section>
+
+  <!-- NUEVO: Buscador / editar cualquier producto -->
+  <section class="card" style="margin-top:16px">
+    <h2>Buscar / editar productos</h2>
+
+    <form id="searchForm" class="row">
+      <input id="q" placeholder="id, marca o nombre…" style="min-width:280px">
+      <label>Ordenar:
+        <select id="sortSel">
+          <option value="recent">Más recientes</option>
+          <option value="brand">Marca A–Z</option>
+          <option value="name">Nombre A–Z</option>
+        </select>
+      </label>
+      <label>Por página:
+        <select id="perSel">
+          <option>25</option>
+          <option selected>50</option>
+          <option>100</option>
+        </select>
+      </label>
+      <button class="btn">Buscar</button>
+      <button id="btnRecents" type="button" class="btn">Últimos 50</button>
+    </form>
+
+    <form id="idForm" class="row" style="margin-top:8px">
+      <input id="pid" placeholder="ID exacto…" />
+      <button class="btn">Editar por ID</button>
+    </form>
+
+    <div id="searchInfo" class="muted" style="margin:8px 0"></div>
+    <div id="searchResults" class="list"></div>
+    <button id="moreBtn" class="btn" hidden>Mostrar más</button>
+  </section>
+
+  <!-- Puedes dejar “Últimos 50” si quieres ese bloque aparte -->
+  <section class="card" style="margin-top:16px">
+    <h2>Productos (últimos 50)</h2>
+    <div id="list" class="list"></div>
+  </section>
+
+  <script type="module">
+    import { supabase } from '/js/supabaseClient.js';
+
+    /* ---- auth + admin check ---- */
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) location.href = '/login.html';
+    const { data: prof } = await supabase.from('profiles')
+      .select('is_admin').eq('id', user.id).single();
+    if (!prof?.is_admin) { alert('No autorizado'); location.href = '/'; }
+
+    /* ==== refs ==== */
+    const logoutBtn  = document.getElementById('logout');
+    const prodForm   = document.getElementById('prodForm');
+    const list       = document.getElementById('list');
+    const trendList  = document.getElementById('trendList');
+    const trendAdd   = document.getElementById('trendAdd');
+    const trendId    = document.getElementById('trendId');
+    const trendOrder = document.getElementById('trendOrder');
+    const imgFile    = document.getElementById('imgFile');
+    const imgPreview = document.getElementById('imgPreview');
+
+    // buscador
+    const searchForm = document.getElementById('searchForm');
+    const qInput     = document.getElementById('q');
+    const sortSel    = document.getElementById('sortSel');
+    const perSel     = document.getElementById('perSel');
+    const btnRecents = document.getElementById('btnRecents');
+    const idForm     = document.getElementById('idForm');
+    const pidInput   = document.getElementById('pid');
+    const resultsBox = document.getElementById('searchResults');
+    const moreBtn    = document.getElementById('moreBtn');
+    const searchInfo = document.getElementById('searchInfo');
+
+    logoutBtn?.addEventListener('click', async () => {
+      await supabase.auth.signOut(); location.href = '/';
+    });
+
+    /* helpers */
+    const slug = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                  .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+    const pubUrl = (bucket, path) => supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+    function toLocalDatetimeValue(iso){
+      if (!iso) return '';
+      const d=new Date(iso), y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'),
+            dd=String(d.getDate()).padStart(2,'0'), h=String(d.getHours()).padStart(2,'0'),
+            mi=String(d.getMinutes()).padStart(2,'0');
+      return `${y}-${m}-${dd}T${h}:${mi}`;
+    }
+
+    // Preview de imagen
+    imgFile?.addEventListener('change', () => {
+      const f = imgFile.files?.[0];
+      if (!f){ imgPreview.style.display='none'; imgPreview.src=''; return; }
+      imgPreview.src = URL.createObjectURL(f);
+      imgPreview.style.display = 'block';
+    });
+
+    /* subir imagen a bucket products */
+    async function uploadImage(id, file){
+      const ext = file.name.split('.').pop().toLowerCase();
+      const path = `${id}/main.${ext}`;
+      const { error } = await supabase.storage.from('products').upload(path, file, { upsert:true, cacheControl:'3600' });
+      if (error) throw error;
+      return pubUrl('products', path);
+    }
+
+    /* listar últimos (bloque histórico) */
+    async function loadProducts(){
+      const { data, error } = await supabase
+        .from('products').select('*')
+        .order('created_at', { ascending:false }).limit(50);
+      if (error){ alert(error.message); return; }
+      list.innerHTML = (data||[]).map(p => `
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <div><code>${p.id}</code></div>
+            <div><b>${p.brand}</b> ${p.name}</div>
+            <div class="muted">${p.size||'100ml'} · ${p.gender||''}</div>
+            <div>${(p.price??0).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})}
+              ${p.list_price?` <del class="muted">${(p.list_price).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})}</del>`:''}
+            </div>
+          </div>
+          <div class="row">
+            <button data-edit="${p.id}" class="btn">Editar</button>
+            <button data-del="${p.id}"  class="btn">Borrar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    await loadProducts();
+
+    /* guardar producto */
+    prodForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const fd  = new FormData(prodForm);
+      const obj = Object.fromEntries(fd.entries());
+
+      obj.id          = obj.id?.trim() || slug(`${obj.brand}-${obj.name}`);
+      obj.price       = Number(obj.price) || 0;
+      obj.list_price  = obj.list_price ? Number(obj.list_price) : null;
+      obj.tags        = (obj.tags||'').split(',').map(s=>s.trim()).filter(Boolean);
+      obj.offer_ends_at = obj.offer_ends_at ? new Date(obj.offer_ends_at).toISOString() : null;
+
+      if (imgFile?.files?.[0]) obj.image = await uploadImage(obj.id, imgFile.files[0]);
+
+      const { error } = await supabase.from('products').upsert(obj, { onConflict:'id' });
+      if (error) return alert(error.message);
+      alert('Guardado');
+
+      prodForm.reset(); imgPreview.style.display='none'; imgPreview.src='';
+      await loadProducts(); await loadTrending(); await runSearch(true);
+    });
+
+    // editar/borrar en “Últimos 50”
+    list.addEventListener('click', async (e)=>{
+      const edit = e.target.getAttribute('data-edit');
+      const del  = e.target.getAttribute('data-del');
+
+      if (edit){
+        const { data } = await supabase.from('products').select('*').eq('id', edit).single();
+        for (const k of Object.keys(data)) if (prodForm[k] !== undefined) prodForm[k].value = data[k] ?? '';
+        prodForm.tags.value = (data.tags||[]).join(', ');
+        prodForm.offer_ends_at.value = toLocalDatetimeValue(data.offer_ends_at);
+        if (data.image){ imgPreview.src=data.image; imgPreview.style.display='block'; } else { imgPreview.style.display='none'; imgPreview.src=''; }
+        alert('Producto cargado en el formulario. Edita y guarda.');
+      }
+
+      if (del){
+        if (confirm('¿Eliminar producto?')){
+          await supabase.from('products').delete().eq('id', del);
+          await loadProducts(); await loadTrending(); await runSearch(true);
+        }
+      }
+    });
+
+    /* tendencias */
+    async function loadTrending(){
+      const { data, error } = await supabase
+        .from('trending').select('id, order_index').order('order_index');
+      if (error){ console.error(error); return; }
+      trendList.innerHTML = (data||[]).map(t => `
+        <li><code>${t.id}</code> · orden ${t.order_index}
+          <button data-t-del="${t.id}" class="btn">Quitar</button>
+        </li>`).join('');
+    }
+    await loadTrending();
+
+    trendAdd.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const id = trendId.value.trim();
+      const order = Number(trendOrder.value) || 0;
+      const { error } = await supabase.from('trending').upsert({ id, order_index: order });
+      if (error) return alert(error.message);
+      trendId.value=''; trendOrder.value=''; await loadTrending();
+    });
+
+    trendList.addEventListener('click', async (e)=>{
+      const id = e.target.getAttribute('data-t-del');
+      if (!id) return;
+      await supabase.from('trending').delete().eq('id', id);
+      await loadTrending();
+    });
+
+    /* ====== Buscador/paginación para editar cualquier producto ====== */
+    const STATE = { q:'', sort:'recent', per:50, page:1, total:0, items:[] };
+
+    function renderResults(items){
+      resultsBox.innerHTML = items.map(p => `
+        <div class="row" style="justify-content:space-between;border:1px solid #2a2b2f;border-radius:10px;padding:8px">
+          <div>
+            <div><code>${p.id}</code></div>
+            <div><b>${p.brand}</b> ${p.name}</div>
+            <div class="muted">${p.size||'100ml'} · ${p.gender||''}</div>
+            <div>${(p.price??0).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})}
+              ${p.list_price?` <del class="muted">${(p.list_price).toLocaleString('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0})}</del>`:''}
+            </div>
+          </div>
+          <div class="row">
+            <button data-edit="${p.id}" class="btn">Editar</button>
+            <button data-del="${p.id}"  class="btn">Borrar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function searchProducts({ q='', sort='recent', page=1, per=50 }){
+      let query = supabase.from('products').select('*', { count:'exact' });
+
+      if (q){
+        // id exacto OR brand/name ilike
+        query = query.or(`id.eq.${q},brand.ilike.%${q}%,name.ilike.%${q}%`);
+      }
+
+      if (sort==='brand'){ query = query.order('brand', { ascending:true }).order('name', { ascending:true }); }
+      else if (sort==='name'){ query = query.order('name', { ascending:true }); }
+      else { query = query.order('created_at', { ascending:false }); }
+
+      const from = (page-1)*per, to = from + per - 1;
+      const { data, error, count } = await query.range(from, to);
+      if (error) throw error;
+      return { data, count };
+    }
+
+    async function runSearch(reset=true){
+      const { data, count } = await searchProducts(STATE);
+      if (reset) STATE.items = [];
+      STATE.items = STATE.items.concat(data||[]);
+      STATE.total = count||0;
+      renderResults(STATE.items);
+      searchInfo.textContent = `Mostrando ${STATE.items.length} de ${STATE.total}`;
+      moreBtn.hidden = STATE.items.length >= STATE.total;
+    }
+
+    // inicial: últimos 50 (preset)
+    (async ()=>{
+      STATE.q=''; STATE.sort='recent'; STATE.per=50; STATE.page=1;
+      await runSearch(true);
+    })();
+
+    searchForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      STATE.q = qInput.value.trim();
+      STATE.sort = sortSel.value;
+      STATE.per = parseInt(perSel.value||'50',10);
+      STATE.page = 1;
+      await runSearch(true);
+    });
+
+    btnRecents.addEventListener('click', async ()=>{
+      STATE.q=''; STATE.sort='recent'; STATE.per=50; STATE.page=1;
+      qInput.value=''; sortSel.value='recent'; perSel.value='50';
+      await runSearch(true);
+    });
+
+    moreBtn.addEventListener('click', async ()=>{
+      STATE.page += 1; await runSearch(false);
+    });
+
+    idForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const id = pidInput.value.trim(); if (!id) return;
+      const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+      if (error || !data){ alert('No encontrado'); return; }
+      for (const k of Object.keys(data)) if (prodForm[k] !== undefined) prodForm[k].value = data[k] ?? '';
+      prodForm.tags.value = (data.tags||[]).join(', ');
+      prodForm.offer_ends_at.value = toLocalDatetimeValue(data.offer_ends_at);
+      if (data.image){ imgPreview.src=data.image; imgPreview.style.display='block'; } else { imgPreview.style.display='none'; imgPreview.src=''; }
+      alert('Producto cargado en el formulario. Edita y guarda.');
+    });
+
+    // Clicks editar/borrar en resultados de búsqueda
+    resultsBox.addEventListener('click', async (e)=>{
+      const edit = e.target.getAttribute('data-edit');
+      const del  = e.target.getAttribute('data-del');
+      if (edit){
+        const { data } = await supabase.from('products').select('*').eq('id', edit).single();
+        for (const k of Object.keys(data)) if (prodForm[k] !== undefined) prodForm[k].value = data[k] ?? '';
+        prodForm.tags.value = (data.tags||[]).join(', ');
+        prodForm.offer_ends_at.value = toLocalDatetimeValue(data.offer_ends_at);
+        if (data.image){ imgPreview.src=data.image; imgPreview.style.display='block'; } else { imgPreview.style.display='none'; imgPreview.src=''; }
+        alert('Producto cargado en el formulario. Edita y guarda.');
+      }
+      if (del){
+        if (confirm('¿Eliminar producto?')){
+          await supabase.from('products').delete().eq('id', del);
+          STATE.page = 1; await runSearch(true); await loadProducts(); await loadTrending();
+        }
+      }
+    });
+  </script>
+</body>
+</html>

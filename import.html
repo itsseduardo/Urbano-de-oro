@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Importador a Supabase</title>
+  <meta name="robots" content="noindex,nofollow">
+  <style>
+    body{font-family:system-ui,arial;padding:20px;background:#0f1012;color:#eaeaea}
+    button{padding:10px 14px;border-radius:10px;border:1px solid #2a2b2f;background:#141416;color:#eee;cursor:pointer}
+    .ok{color:#97e6a1}.err{color:#ff8a8a}.muted{color:#999}
+    pre{background:#111218;border-radius:12px;padding:12px;max-height:50vh;overflow:auto}
+  </style>
+</head>
+<body>
+  <h1>Importar productos y tendencias</h1>
+  <p class="muted">Debes estar logueado como <strong>admin</strong>. Este script leerá <code>/data/products.json</code> y <code>/data/trending.json</code> y los subirá a Supabase.</p>
+  <div style="margin:10px 0">
+    <button id="btnProducts">Importar productos</button>
+    <button id="btnTrending">Importar tendencias</button>
+  </div>
+  <pre id="log"></pre>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    // ⬇️ Rellena con los datos de tu proyecto
+    const SUPABASE_URL = "https://derdvczgpllqrufrbiao.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlcmR2Y3pncGxscXJ1ZnJiaWFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5MjU0NjMsImV4cCI6MjA3MzUwMTQ2M30.vqKxFGP_iQBuwAu8b37fmOuv4l-eTIS6e8WIqe6S2q0";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const log = (m, cls='')=>{
+      const pre = document.getElementById('log');
+      pre.innerHTML += (cls?`<span class="${cls}">${m}</span>`:m) + "\n";
+      pre.scrollTop = pre.scrollHeight;
+    };
+
+    // auth + admin check
+    const { data:{ user } } = await supabase.auth.getUser();
+    if(!user){ log('No logueado. Redirigiendo a /login.html ...','err'); location.href='/login.html'; }
+    const { data: prof, error: pe } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+    if(pe || !prof?.is_admin){ log('No autorizado. Debes ser admin.','err'); throw new Error('No admin'); }
+
+    const slug = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+
+    async function importProducts(){
+      try{
+        log('⏳ Leyendo /data/products.json ...','muted');
+        const res = await fetch('/data/products.json', { cache: 'no-store' });
+        if(!res.ok) throw new Error('No pude leer /data/products.json');
+        const items = await res.json();
+        log(`Encontrados ${items.length} productos.`);
+
+        // map a columnas supabase: listPrice -> list_price
+        const rows = items.map(p => {
+          const id = (p.id && String(p.id).trim()) || slug(`${p.brand}-${p.name}`);
+          return {
+            id,
+            brand: String(p.brand||'').trim(),
+            name:  String(p.name||'').trim(),
+            gender: String(p.gender||'unisex').toLowerCase(),
+            size:   p.size || '100ml',
+            price:  Number(p.price)||0,
+            list_price: p.listPrice ? Number(p.listPrice) : null,
+            tags: Array.isArray(p.tags) ? p.tags.map(t=>String(t).toLowerCase()) : [],
+            image: p.image || null,
+            images: Array.isArray(p.images) ? p.images : null,
+            stock: isNaN(p.stock) ? 0 : Number(p.stock)
+          };
+        });
+
+        // sube en lotes para no exceder payload
+        const chunk = 400;
+        for(let i=0;i<rows.length;i+=chunk){
+          const slice = rows.slice(i, i+chunk);
+          log(`⬆️ Subiendo ${slice.length} productos (${i+1}-${i+slice.length}) ...`);
+          const { error } = await supabase.from('products').upsert(slice, { onConflict: 'id' });
+          if(error) throw error;
+          log('✔️ Lote ok', 'ok');
+        }
+        log('🎉 Importación de productos terminada.','ok');
+      }catch(err){
+        console.error(err);
+        log(`❌ Error: ${err.message}`,'err');
+      }
+    }
+
+    async function importTrending(){
+      try{
+        log('⏳ Leyendo /data/trending.json ...','muted');
+        const res = await fetch('/data/trending.json', { cache: 'no-store' });
+        if(!res.ok){ log('No hay trending.json, saltando.','muted'); return; }
+        const t = await res.json();
+
+        // soporta array ["id1","id2"] o array de objetos [{id, order}]
+        const rows = Array.isArray(t)
+          ? t.map((x, idx) => typeof x === 'string'
+              ? { id: x, order_index: idx+1 }
+              : { id: x.id, order_index: Number(x.order ?? idx+1) })
+          : [];
+
+        if(!rows.length){ log('Trending vacío, nada que hacer.','muted'); return; }
+
+        // upsert por id para mantener/actualizar orden
+        const { error } = await supabase.from('trending').upsert(rows, { onConflict: 'id' });
+        if(error) throw error;
+
+        log(`✔️ Importadas ${rows.length} posiciones de tendencias.`,'ok');
+      }catch(err){
+        console.error(err);
+        log(`❌ Error: ${err.message}`,'err');
+      }
+    }
+
+    document.getElementById('btnProducts').addEventListener('click', importProducts);
+    document.getElementById('btnTrending').addEventListener('click', importTrending);
+  </script>
+</body>
+</html>

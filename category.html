@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categoría | Urbano de Oro</title>
+  <link rel="icon" href="/assets/urbanologo.jpg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+  <header class="container header">
+    <a class="brand" href="/"><img src="/assets/urbanologo.jpg" alt="Urbano de Oro" /><span>Urbano de Oro</span></a>
+    <nav class="nav">
+      <a href="/">Inicio</a>
+      <a href="/nuevos.html">Nuevos lanzamientos</a>
+      <a href="/ofertas.html">Ofertas</a>
+      <a class="btn btn--primary" href="https://wa.me/573116997253" target="_blank" rel="noopener">WhatsApp</a>
+      <a id="cartOpen" class="cart-btn" href="#" aria-label="Abrir carrito">
+        <!-- Bolsa -->
+        <svg class="cart-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <!-- cuerpo de la bolsa -->
+          <rect x="4.5" y="8" width="15" height="12" rx="2.2" ry="2.2" fill="none" stroke="currentColor"
+            stroke-width="1.8" />
+          <!-- asa -->
+          <path d="M8.5 8V6.5a3.5 3.5 0 0 1 7 0V8" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" />
+        </svg>
+        <!-- badge -->
+        <span id="cartCount" class="cart-count">0</span>
+      </a>
+    </nav>
+    <button class="nav-toggle" aria-label="Abrir menú">☰</button>
+  </header>
+
+  <div class="cat-hero">
+    <div class="container">
+      <nav class="crumbs"><a href="/">Inicio</a> / <span id="crumbCat">Categoría</span></nav>
+      <h1 id="catTitle">Categoría</h1>
+    </div>
+  </div>
+
+  <section class="container section cat-page">
+    <!-- Sidebar -->
+    <aside class="cat-sidebar">
+      <details class="facet-card" open>
+        <summary class="facet-summary">Categorías del producto</summary>
+        <!-- la lista se llena por JS -->
+        <ul id="facetList" class="facet-list"></ul>
+        <a id="clearFacet" class="facet-clear" href="#" hidden>✕ Quitar filtro</a>
+      </details>
+    </aside>
+
+    <!-- Main -->
+    <main class="cat-main">
+      <div class="cat-toolbar">
+        <span id="resultsInfo" class="muted"></span>
+        <div class="right">
+          <label class="control">Mostrar:
+            <select id="perSelect">
+              <option>12</option>
+              <option>24</option>
+              <option selected>30</option>
+              <option>48</option>
+            </select>
+          </label>
+          <label class="control">Ordenar por:
+            <select id="sortSelect">
+              <option value="default" selected>Por defecto</option>
+              <option value="priceAsc">Precio ↑</option>
+              <option value="priceDesc">Precio ↓</option>
+              <option value="nameAsc">Nombre A–Z</option>
+              <option value="nameDesc">Nombre Z–A</option>
+              <option value="offer">Ofertas</option>
+            </select>
+          </label>
+          <div class="view-toggle" id="viewToggle" role="group" aria-label="Cambiar vista">
+            <button class="toggle-btn is-active" data-view="grid" aria-pressed="true" title="Vista de cuadrícula">
+              <!-- icono grid -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z" />
+              </svg>
+            </button>
+            <button class="toggle-btn" data-view="list" aria-pressed="false" title="Vista de lista">
+              <!-- icono list -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="catGrid" class="grid"></div>
+      <div id="PAGER" class="pager"></div>
+      <div id="emptyCat" class="empty" hidden>No hay productos que coincidan.</div>
+    </main>
+  </section>
+
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div><strong>Urbano de Oro</strong>
+        <p class="muted">© <span id="year"></span></p>
+      </div>
+      <div class="footer__links">
+        <a href="https://www.instagram.com/urbanodeoro.col/" target="_blank">Instagram</a>
+        <a href="https://wa.me/573116997253" target="_blank">WhatsApp</a>
+        <a href="mailto:urbanodeoroinfo@gmail.com">Gmail</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Carrito (drawer) -->
+  <div id="cartDrawer" class="cart-drawer" aria-hidden="true">
+    <!-- Backdrop primero -->
+    <button id="cartBackdrop" class="cart-backdrop" aria-label="Cerrar carrito"></button>
+
+    <!-- Panel después -->
+    <div class="cart-panel" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+      <header class="cart-head">
+        <h3 id="cartTitle">Carrito</h3>
+        <button id="cartClose" class="icon-btn" aria-label="Cerrar">✕</button>
+      </header>
+
+      <div id="cartItems" class="cart-items"></div>
+
+      <footer class="cart-foot">
+        <div class="cart-row">
+          <span>Subtotal</span>
+          <strong id="cartSubtotal">$0</strong>
+        </div>
+        <div class="cart-actions">
+          <button id="cartClear" class="btn">Vaciar</button>
+          <button id="cartWhats" class="btn btn--primary">Pedir por WhatsApp</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script src="/js/cart.js" defer></script>
+  <script type="module" src="/js/category.js"></script>
+
+</body>
+
+</html>
