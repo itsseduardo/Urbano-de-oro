@@ -1,0 +1,24 @@
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# compilados / cachés
+dist/
+build/
+out/
+*.log
+*.cache
+
+# dependencias (si llegas a usar bundlers)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# variables y llaves
+.env
+.env.*
+*.local
+supabase/.temp/
